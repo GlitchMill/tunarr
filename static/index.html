@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Music Albums</title>
+    <style>
+      body {
+        font-family: "Open Sans", sans-serif;
+      }
+
+      .album-artist {
+        opacity: 0.7;
+      }
+
+      .card {
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 p-6">
+    <div class="container mx-auto">
+      <h1 class="text-4xl font-bold text-center mb-8">Music Albums</h1>
+      <ul
+        id="album-list"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      ></ul>
+    </div>
+
+    <script>
+      async function fetchAlbums() {
+        const response = await fetch("/albums");
+        const albums = await response.json();
+        const albumList = document.getElementById("album-list");
+
+        albums.forEach((album) => {
+          const li = document.createElement("li");
+
+          // ShadCN-inspired card layout
+          li.innerHTML = `
+                    <div class="card shadow-lg rounded-lg overflow-hidden bg-gray-800">
+                        ${
+                          album.cover_art
+                            ? `
+                            <img src="data:image/jpeg;base64,${album.cover_art}" alt="Cover art for ${album.name}" class="w-full h-64 object-cover">
+                        `
+                            : `
+                            <div class="w-full h-64 flex items-center justify-center bg-gray-700">
+                                <span class="text-gray-400">No Cover Art</span>
+                            </div>
+                        `
+                        }
+                        <div class="p-4">
+                            <h2 class="text-xl font-semibold text-gray-100">${
+                              album.name
+                            }</h2>
+                            <p class="album-artist text-lg text-gray-400">${
+                              album.artist || "Unknown Artist"
+                            }</p>
+                        </div>
+                    </div>
+                `;
+          albumList.appendChild(li);
+        });
+      }
+
+      fetchAlbums();
+    </script>
+  </body>
+</html>

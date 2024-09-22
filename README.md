@@ -1,6 +1,7 @@
+
 # 🎧 Tunarr
 
-**Tunarr** is a Rust-based command-line tool that helps organize your music files by renaming them and placing them into album-specific folders. It works with various file formats like `.mp3`, `.flac`, `.aac`, `.ogg`, and `.m4a`. 🚀
+**Tunarr** is a Rust-based command-line tool that helps organize your music files by renaming them and placing them into album-specific folders. It supports various file formats like `.mp3`, `.flac`, `.aac`, `.ogg`, and `.m4a`. 🚀
 
 ## Features 🌟
 
@@ -9,6 +10,7 @@
 - 🖇️ Handles multiple file formats: `.mp3`, `.flac`, `.aac`, `.ogg`, and `.m4a`.
 - 🔄 Falls back to using the artist's name if the album artist is not available.
 - 🔄 Uses a default name if both album and artist are missing.
+- 🌐 Includes a web interface for easier interaction and album browsing.
 
 ## Getting Started 🚀
 
@@ -44,20 +46,21 @@ cargo run --release -- ./music
 
 This will sort all music files in the `./music` directory, creating folders based on album names and renaming the files accordingly.
 
+### Web UI 🌐
+
+You can start the web server to interact with **Tunarr** through a browser:
+```bash
+cargo run --release
+```
+Access the web interface at `http://127.0.0.1:8280` to view albums and cover art.
+
 ### Roadmap 🗺️
 Upcoming Features 🚀
-🎶 Support for additional audio formats: Extend compatibility to more audio formats.
-🔍 Enhanced metadata extraction: Improve how metadata is read, including lyrics and artwork.
-📦 GUI version: Develop a graphical user interface for easier usage.
-🔄 Batch processing: Allow for batch sorting of multiple folders at once.
-🎨 Custom naming patterns: Enable users to define their own file naming conventions.
-
-#### Web UI 🌐
-
-We are planning to add a web user interface to **Tunarr** for easier interaction. This will allow users to:
-- Upload music files directly through the browser.
-- Trigger the sorting process and view the status.
-- Browse the sorted music library visually.
+- 🎶 Support for additional audio formats: Extend compatibility to more audio formats.  
+- 🔍 Enhanced metadata extraction: Improve how metadata is read, including lyrics and artwork.  
+- 📦 GUI version: Develop a graphical user interface for easier usage.  
+- 🔄 Batch processing: Allow for batch sorting of multiple folders at once.  
+- 🎨 Custom naming patterns: Enable users to define their own file naming conventions.  
 
 ## Contributing 🤝
 
