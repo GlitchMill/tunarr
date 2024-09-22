@@ -1,0 +1,9 @@
+[package]
+name = "tunarr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+id3 = "0.6" # For MP3 tags
+mp4ameta = "0.4"  # For M4A files
+lofty = "0.9" # For FLAC, OGG, AAC files
