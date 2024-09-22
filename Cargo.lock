@@ -1238,6 +1238,7 @@ dependencies = [
  "id3",
  "lofty",
  "mp4ameta",
+ "rand",
  "serde",
  "serde_json",
 ]

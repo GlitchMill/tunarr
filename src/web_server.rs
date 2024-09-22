@@ -10,6 +10,7 @@ use id3::Tag;
 use lofty::probe::Probe; 
 use lofty::file::TaggedFileExt;
 use id3::TagLike;
+use rand::seq::SliceRandom;
 
 pub async fn start_server() -> std::io::Result<()> {
     dotenv().ok();
@@ -48,40 +49,35 @@ pub async fn get_albums(music_dir: web::Data<String>) -> HttpResponse {
             let mut cover_art = None;
             let album_path = entry.path();
 
-            // Check if the directory is empty or inaccessible
-            if let Ok(mut files) = std::fs::read_dir(&album_path) {
-                // Collect files into a Vec to check if empty
-                let files: Vec<_> = files.filter_map(Result::ok).collect();
-                if files.is_empty() {
-                    continue; // Skip empty directories
-                }
+            // Collect all files in the directory
+            let mut files: Vec<_> = match std::fs::read_dir(&album_path) {
+                Ok(entries) => entries.filter_map(Result::ok).collect(),
+                Err(_) => continue, // Skip inaccessible directories
+            };
 
-                for file_entry in files {
-                    let file_path = file_entry.path();
+            // Randomly select a file if available
+            if let Some(random_file) = files.choose(&mut rand::thread_rng()) {
+                let file_path = random_file.path();
 
-                    // Handle MP3 files
-                    if file_path.extension().map(|s| s == "mp3").unwrap_or(false) {
-                        if let Ok(tag) = Tag::read_from_path(&file_path) {
-                            if let Some(frame) = tag.get("APIC") {
-                                let content = frame.content();
-                                if let Some(picture) = match content {
-                                    id3::Content::Picture(picture) => Some(picture),
-                                    _ => None,
-                                } {
-                                    cover_art = Some(general_purpose::STANDARD.encode(&picture.data));
-                                }
+                // Attempt to extract cover art from the randomly selected file
+                if file_path.extension().map(|s| s == "mp3").unwrap_or(false) {
+                    if let Ok(tag) = Tag::read_from_path(&file_path) {
+                        if let Some(frame) = tag.get("APIC") {
+                            let content = frame.content();
+                            if let Some(picture) = match content {
+                                id3::Content::Picture(picture) => Some(picture),
+                                _ => None,
+                            } {
+                                cover_art = Some(general_purpose::STANDARD.encode(&picture.data));
                             }
                         }
                     }
-
-                    // Handle FLAC files
-                    if file_path.extension().map(|s| s == "flac").unwrap_or(false) {
-                        if let Ok(probe) = Probe::open(&file_path) {
-                            if let Ok(tagged_file) = probe.read() {
-                                if let Some(tag) = tagged_file.primary_tag() {
-                                    if let Some(picture) = tag.pictures().first() {
-                                        cover_art = Some(general_purpose::STANDARD.encode(picture.data()));
-                                    }
+                } else if file_path.extension().map(|s| s == "flac").unwrap_or(false) {
+                    if let Ok(probe) = Probe::open(&file_path) {
+                        if let Ok(tagged_file) = probe.read() {
+                            if let Some(tag) = tagged_file.primary_tag() {
+                                if let Some(picture) = tag.pictures().first() {
+                                    cover_art = Some(general_purpose::STANDARD.encode(picture.data()));
                                 }
                             }
                         }
