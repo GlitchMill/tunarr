@@ -44,6 +44,21 @@ cargo run --release -- ./music
 
 This will sort all music files in the `./music` directory, creating folders based on album names and renaming the files accordingly.
 
+### Roadmap 🗺️
+Upcoming Features 🚀
+🎶 Support for additional audio formats: Extend compatibility to more audio formats.
+🔍 Enhanced metadata extraction: Improve how metadata is read, including lyrics and artwork.
+📦 GUI version: Develop a graphical user interface for easier usage.
+🔄 Batch processing: Allow for batch sorting of multiple folders at once.
+🎨 Custom naming patterns: Enable users to define their own file naming conventions.
+
+#### Web UI 🌐
+
+We are planning to add a web user interface to **Tunarr** for easier interaction. This will allow users to:
+- Upload music files directly through the browser.
+- Trigger the sorting process and view the status.
+- Browse the sorted music library visually.
+
 ## Contributing 🤝
 
 Contributions are welcome! If you'd like to contribute to **Tunarr**, please fork the repository and submit a pull request.
