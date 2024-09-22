@@ -12,6 +12,7 @@ use lofty::file::TaggedFileExt;
 use id3::TagLike;
 use rand::seq::SliceRandom;
 
+?
 pub async fn start_server() -> std::io::Result<()> {
     dotenv().ok();
     let music_dir = env::var("MUSIC_DIR").expect("MUSIC_DIR not set in .env");

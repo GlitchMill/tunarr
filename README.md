@@ -1,7 +1,7 @@
 
 # 🎧 Tunarr
 
-**Tunarr** is a Rust-based command-line tool that helps organize your music files by renaming them and placing them into album-specific folders. It supports various file formats like `.mp3`, `.flac`, `.aac`, `.ogg`, and `.m4a`. 🚀
+**Tunarr** is a Rust-based application that helps organize your music files by renaming them and placing them into album-specific folders. It supports various file formats like `.mp3`, `.flac`, `.aac`, `.ogg`, and `.m4a`. 🚀
 
 ## Features 🌟
 
