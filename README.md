@@ -14,8 +14,6 @@
 
 ## Getting Started 🚀
 
-To Start with Tunarr, you'll need to install it on your machine
-
 ### Prerequisites 📜
 
 - Rust installed on your machine. If you haven't installed Rust yet, follow the [official Rust installation guide](https://www.rust-lang.org/tools/install).
