@@ -1,21 +1,29 @@
 use actix_files as fs;
 use actix_web::{web, App, HttpServer, HttpResponse};
 use std::fs as std_fs;
+use std::env;
+use dotenv::dotenv;
 use crate::album::Album;
 use base64::engine::general_purpose;
 use base64::Engine;
 use id3::Tag; 
 use lofty::probe::Probe; 
-use lofty::prelude::ItemKey;
+use lofty::file::TaggedFileExt;
 use id3::TagLike;
-use lofty::file::TaggedFileExt; 
 
 pub async fn start_server() -> std::io::Result<()> {
+    dotenv().ok();
+    let music_dir = env::var("MUSIC_DIR").expect("MUSIC_DIR not set in .env");
+
     HttpServer::new(move || {
+        // Wrap the music_dir in web::Data
+        let music_dir_data = web::Data::new(music_dir.clone());
+
         App::new()
+            .app_data(music_dir_data) // Register the music_dir_data
             .service(fs::Files::new("/static", "static").show_files_listing())
             .route("/", web::get().to(home))
-            .route("/albums", web::get().to(get_albums))
+            .route("/albums", web::get().to(get_albums)) // This will now call get_albums
     })
     .bind("127.0.0.1:8280")?
     .run()
@@ -29,11 +37,10 @@ async fn home() -> HttpResponse {
     HttpResponse::Ok().content_type("text/html").body(html)
 }
 
-pub async fn get_albums() -> HttpResponse {
-    let music_dir = "/path/to/music"; 
+pub async fn get_albums(music_dir: web::Data<String>) -> HttpResponse {
     let mut albums = Vec::new();
-
-    for entry in std::fs::read_dir(music_dir).unwrap() {
+    let music_dir_path = music_dir.get_ref();
+    for entry in std::fs::read_dir(music_dir_path).unwrap() {
         let entry = entry.unwrap();
         if entry.path().is_dir() {
             let album_name = entry.file_name().to_string_lossy().to_string();
