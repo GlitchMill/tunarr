@@ -1,8 +1,6 @@
 mod album;
-mod music_processor;
+// mod music_processor;
 mod web_server;
-use std::env;
-use dotenv::dotenv;
 use std::error::Error;
 
 #[actix_web::main]

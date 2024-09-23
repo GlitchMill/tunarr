@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+  />
+  <title>Settings</title>
+  <style>
+    body {
+      transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    }
+  </style>
+</head>
+<body class="p-6 bg-gray-800 text-white" id="settings-body">
+  <div class="container mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-8">Settings</h1>
+    
+    <!-- Dark/Light Mode Toggle -->
+    <div class="mb-6 text-center">
+      <label class="mr-2">Dark Mode</label>
+      <input type="checkbox" id="mode-toggle" />
+    </div>
+
+    <!-- Folder Path Management -->
+    <div class="mb-6">
+      <label for="folder-path" class="block mb-2">Music Folder Path:</label>
+      <input type="text" id="folder-path" class="w-full p-2 rounded" placeholder="Enter music folder path" />
+      <button id="save-path" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded mt-2">Save Path</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Load saved settings (if any)
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedMode = localStorage.getItem('mode');
+      const savedPath = localStorage.getItem('musicDir');
+
+      if (savedMode === 'light') {
+        document.body.classList.replace('bg-gray-800', 'bg-white');
+        document.body.classList.replace('text-white', 'text-black');
+        document.getElementById('mode-toggle').checked = true;
+      }
+
+      if (savedPath) {
+        document.getElementById('folder-path').value = savedPath;
+      }
+    });
+
+    // Toggle mode
+    document.getElementById('mode-toggle').addEventListener('change', (event) => {
+      if (event.target.checked) {
+        document.body.classList.replace('bg-gray-800', 'bg-white');
+        document.body.classList.replace('text-white', 'text-black');
+        localStorage.setItem('mode', 'light');
+      } else {
+        document.body.classList.replace('bg-white', 'bg-gray-800');
+        document.body.classList.replace('text-black', 'text-white');
+        localStorage.setItem('mode', 'dark');
+      }
+    });
+
+    // Save folder path
+document.getElementById('save-path').addEventListener('click', async () => {
+  const path = document.getElementById('folder-path').value;
+  await fetch('/save-path', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(path) // Send the path as a JSON string
+  });
+  alert('Folder path saved!'); // You can replace this with better feedback
+});
+
+  </script>
+</body>
+</html>
