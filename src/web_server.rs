@@ -13,6 +13,11 @@ use id3::TagLike;
 use rand::seq::SliceRandom;
 use std::io::Write;
 use crate::web_server::std_fs::OpenOptions;
+use walkdir::WalkDir;
+use futures::stream;
+use actix_web::web::Bytes;
+use futures::StreamExt;
+
 pub async fn start_server() -> std::io::Result<()> {
     dotenv().ok();
     let music_dir = env::var("MUSIC_DIR").expect("MUSIC_DIR not set in .env");
@@ -32,7 +37,6 @@ pub async fn start_server() -> std::io::Result<()> {
     .run()
     .await
 }
-
 
 #[post("/save-path")]
 async fn save_path(path: web::Json<String>) -> HttpResponse {
@@ -93,24 +97,30 @@ pub async fn get_albums(music_dir: web::Data<String>) -> HttpResponse {
     let mut albums = Vec::new();
     let music_dir_path = music_dir.get_ref();
 
-    for entry in std::fs::read_dir(music_dir_path).unwrap() {
-        let entry = entry.unwrap();
+    // Traverse only the subdirectories of the main directory (e.g., "aux")
+    for entry in WalkDir::new(music_dir_path)
+        .min_depth(2)  // Start checking from second level
+        .max_depth(2)  // Limit search to one level deeper
+        .into_iter()
+        .filter_map(Result::ok)
+    {
         if entry.path().is_dir() {
             let album_name = entry.file_name().to_string_lossy().to_string();
             let mut cover_art = None;
             let album_path = entry.path();
 
-            // Collect all files in the directory
-            let files: Vec<_> = match std::fs::read_dir(&album_path) {
-                Ok(entries) => entries.filter_map(Result::ok).collect(),
-                Err(_) => continue, // Skip inaccessible directories
-            };
+            // Collect all files in the album directory (ignoring deeper subdirectories)
+            let files: Vec<_> = std::fs::read_dir(&album_path)
+                .unwrap()
+                .filter_map(Result::ok)
+                .filter(|e| e.path().is_file()) // Only consider files
+                .collect();
 
-            // Randomly select a file if available
+            // Randomly select a file if available for cover art
             if let Some(random_file) = files.choose(&mut rand::thread_rng()) {
                 let file_path = random_file.path();
 
-                // Attempt to extract cover art from the randomly selected file
+                // Check for cover art in mp3 or flac files
                 if file_path.extension().map(|s| s == "mp3").unwrap_or(false) {
                     if let Ok(tag) = Tag::read_from_path(&file_path) {
                         if let Some(frame) = tag.get("APIC") {
